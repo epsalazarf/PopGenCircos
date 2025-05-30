@@ -32,6 +32,7 @@ python SNPCounter.py [file.bim]
 #<START>
 #Load required module
 import sys,csv
+from itertools import chain
 
 #Variables
 
@@ -45,7 +46,7 @@ snpcount = 0
 snppchr = 0
 
 #CORE
-if filename.endswith(".bim") or filename.endswith(".map"):
+if filename.endswith(".bim") or filename.endswith(".pvar"):
     print ("Processing " + filename)
     print ("Chromosome " + str(chrm) + "...")
     newfile = (filename[:-3] + "snpcounts.txt")
@@ -56,7 +57,7 @@ if filename.endswith(".bim") or filename.endswith(".map"):
                 lnread += 1
                 columns = line.split()
                 if (int(columns[0]) == chrm):
-                    if int(columns[3]) < wndwend:
+                    if int(columns[1]) < wndwend:
                         snpcount += 1
                     else:
                         OUT.writerow([("hs"+str(chrm)),wndwbegin,wndwend,snpcount])
@@ -65,7 +66,7 @@ if filename.endswith(".bim") or filename.endswith(".map"):
                         snpcount = 0
                         wndwbegin += 1000000
                         wndwend += 1000000
-                        while (int(columns[3]) > wndwend):                    
+                        while (int(columns[1]) > wndwend):                    
                             OUT.writerow([("hs"+str(chrm)),wndwbegin,wndwend,snpcount])
                             chcksum += snpcount                        
                             wndwbegin += 1000000
@@ -86,7 +87,7 @@ if filename.endswith(".bim") or filename.endswith(".map"):
                         print ("Found " + str(snppchr) + " SNPs (omitted)")                        
                         chrm += 1
                         print ("Chromosome " + str(chrm) + "...")
-                    while (int(columns[3]) > wndwend):                    
+                    while (int(columns[1]) > wndwend):                    
                         OUT.writerow([("hs"+str(chrm)),wndwbegin,wndwend,snpcount])
                         chcksum += snpcount                        
                         wndwbegin += 1000000
@@ -101,7 +102,7 @@ if filename.endswith(".bim") or filename.endswith(".map"):
             print (" - SNPs counted: " + str(chcksum))
         print (" > Output file: "+ newfile)
 else:
-    print ("ERROR: Not a BIM/MAP file")
+    print ("ERROR: Not a BIM/MAP or PVAR file")
 
 
 #<END>
